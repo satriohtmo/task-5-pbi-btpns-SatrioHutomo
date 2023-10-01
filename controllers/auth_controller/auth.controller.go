@@ -8,7 +8,6 @@ import (
 	"github.com/satriohtmo/go-gin-gorm.git/database"
 	"github.com/satriohtmo/go-gin-gorm.git/helpers"
 	"github.com/satriohtmo/go-gin-gorm.git/models"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func SignUp(c *gin.Context)  {
@@ -27,7 +26,7 @@ func SignUp(c *gin.Context)  {
 		return 
 	}
 
-	hash, err := bcrypt.GenerateFromPassword([]byte(body.Password), 10)
+	hash, err := helpers.HashPassword(body.Password)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H {
@@ -62,7 +61,7 @@ func Login(c *gin.Context)  {
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(body.Password)); err != nil {
+	if err := helpers.ComparePassword(body.Password, user.Password); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Invalid password"})
 		return
 	}
